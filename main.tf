@@ -1,6 +1,8 @@
 terraform {
     backend "s3"{
-        bucket = "s3://webCarmen"
+        key = "terraform.tfstate"
+        bucket = "web-carmen"
+        region = "us-east-1"
     }
   required_providers {
     aws = {
