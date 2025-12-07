@@ -1,19 +1,13 @@
 #!/bin/bash -xe
 exec > /tmp/userdata.log 2>&1   # Redirige toda la salida (stdout y stderr) a un log para depuración
 
-<<<<<<< HEAD
 
-=======
->>>>>>> f45f777d761c994eb69b924631e33c5782b4c1fd
 apt update -y                   # Actualiza la lista de paquetes disponibles
 apt upgrade -y                  # Actualiza los paquetes instalados a su última versión
 apt install -y php8.1           # Instala PHP 8.1
 apt install -y apache2          # Instala el servidor web Apache
-<<<<<<< HEAD
 #apt install mysql-client -y
 
-=======
->>>>>>> f45f777d761c994eb69b924631e33c5782b4c1fd
 
 # Crea un nuevo archivo de configuración para un sitio en Apache
 cat > /etc/apache2/sites-available/php.conf << EOF
@@ -21,29 +15,18 @@ cat > /etc/apache2/sites-available/php.conf << EOF
     DocumentRoot /var/www/php
     # Si no encuentra la url cogerá el que esté activo,
     # si hay varios el primero alfabéticamente
-<<<<<<< HEAD
    
     # ServerName dhr-server.com
     # Esto sería la url de nuestro servidor DNS
     
-=======
-    
-    # ServerName dhr-server.com
-    # Esto sería la url de nuestro servidor DNS
->>>>>>> f45f777d761c994eb69b924631e33c5782b4c1fd
 
 </VirtualHost>
 EOF
 
-<<<<<<< HEAD
 
 mkdir -p /var/www/php           # Crea el directorio raíz del sitio PHP
 
 
-=======
-mkdir -p /var/www/php           # Crea el directorio raíz del sitio PHP
-
->>>>>>> f45f777d761c994eb69b924631e33c5782b4c1fd
 # Crea una página PHP básica que muestra información del servidor
 cat > /var/www/php/index.php << EOF
 <?php
@@ -52,13 +35,7 @@ cat > /var/www/php/index.php << EOF
 ?>
 EOF
 
-<<<<<<< HEAD
 
 a2dissite 000-default           # Desactiva el sitio por defecto de Apache
 a2ensite php.conf               # Activa el nuevo sitio PHP
 systemctl restart apache2       # Reinicia Apache para aplicar los cambios
-=======
-a2dissite 000-default           # Desactiva el sitio por defecto de Apache
-a2ensite php.conf               # Activa el nuevo sitio PHP
-systemctl restart apache2       # Reinicia Apache para aplicar los cambios
->>>>>>> f45f777d761c994eb69b924631e33c5782b4c1fd
