@@ -105,57 +105,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_Backend" {
 }
 
 
-/* INSTANCIA BBDD */
-/* resource "aws_instance" "BBDD" {
-  ami                    = "ami-0bbdd8c17ed981ef9"
-  instance_type          = "t2.small"
-  vpc_security_group_ids = [aws_security_group.BBDD_SG.id]
-  key_name               = "vockey"
-  tags = {
-    Name = "BBDD"
-  }
-  user_data                   = file("scripts/install_apache_php.sh")
-  user_data_replace_on_change = true
-}
- */
-/* GRUPO BBDD */
-/* resource "aws_security_group" "BBDD_SG" {
-  name        = "grupo_BBDD"
-  description = "SSH and MySQL from Frontend and Backend"
-  tags = {
-    Name = "grupo_BBDD"
-  }
-}
 
-resource "aws_vpc_security_group_ingress_rule" "entrada_ssh_bastion_bbdd" {
-  security_group_id            = aws_security_group.BBDD_SG.id
-  referenced_security_group_id = aws_security_group.Bastion.id
-  from_port                    = 22
-  ip_protocol                  = "tcp"
-  to_port                      = 22
-}
-
-resource "aws_vpc_security_group_ingress_rule" "entrada_mysql_frontend_bbdd" {
-  security_group_id            = aws_security_group.BBDD_SG.id
-  referenced_security_group_id = aws_security_group.Frontend_SG.id
-  from_port                    = 3306
-  ip_protocol                  = "tcp"
-  to_port                      = 3306
-}
-
-resource "aws_vpc_security_group_ingress_rule" "entrada_mysql_backend_bbdd" {
-  security_group_id            = aws_security_group.BBDD_SG.id
-  referenced_security_group_id = aws_security_group.Backend_SG.id
-  from_port                    = 3306
-  ip_protocol                  = "tcp"
-  to_port                      = 3306
-}
-
-resource "aws_vpc_security_group_egress_rule" "allow_all_BBDD" {
-  security_group_id = aws_security_group.BBDD_SG.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1"
-} */
 
 /* INSTANCIA BASTION */
 resource "aws_instance" "Bastion" {
@@ -228,4 +178,57 @@ resource "aws_route53_record" "BackEnd_record" {
   zone_id = aws_route53_zone.mainzone.zone_id
   ttl     = "300"
   records = [aws_instance.Backend.private_ip]
+}
+
+/* INSTANCIA BBDD */
+resource "aws_instance" "Database" {
+  ami                    = "ami-0bbdd8c17ed981ef9"
+  instance_type          = "t2.small"
+  vpc_security_group_ids = [aws_security_group.Database_SG.id]
+  key_name               = "vockey"
+  tags = {
+    Name = "Database"
+  }
+  user_data                   = file("scripts/install_mysql.sh")
+  user_data_replace_on_change = true
+}
+
+/* GRUPO BBDD */
+resource "aws_security_group" "Database_SG" {
+  name        = "grupo_Database"
+  description = "MySQL from Backend and SSH from Bastion"
+  tags = {
+    Name = "grupo_Database"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "entrada_ssh_bastion_database" {
+  security_group_id            = aws_security_group.Database_SG.id
+  referenced_security_group_id = aws_security_group.Bastion_SG.id
+  from_port                    = 22
+  ip_protocol                  = "tcp"
+  to_port                      = 22
+}
+
+resource "aws_vpc_security_group_ingress_rule" "entrada_mysql_backend_database" {
+  security_group_id            = aws_security_group.Database_SG.id
+  referenced_security_group_id = aws_security_group.Backend_SG.id
+  from_port                    = 3306
+  ip_protocol                  = "tcp"
+  to_port                      = 3306
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_Database" {
+  security_group_id = aws_security_group.Database_SG.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+/* ROUTE 53 BBDD */
+resource "aws_route53_record" "Database_record" {
+  type    = "A"
+  name    = "db.${var.zone_name}"
+  zone_id = aws_route53_zone.mainzone.zone_id
+  ttl     = "300"
+  records = [aws_instance.Database.private_ip]
 }
