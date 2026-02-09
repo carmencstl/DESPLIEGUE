@@ -1,0 +1,32 @@
+Para configurar el proxy
+Host Bastion
+    HostName ec2-3-213-168-252.compute-1.amazonaws.com
+    User ubuntu
+    IdentityFile C:\Users\Cristian\Desktop\Ciclo\Despliegue\vockey.pem
+
+Host Front
+    HostName 172.31.23.154
+    User ubuntu
+    IdentityFile C:\Users\Cristian\Desktop\Ciclo\Despliegue\vockey.pem
+    ProxyJump Bastion
+
+Host Back
+    HostName 172.31.19.51
+    User ubuntu
+    IdentityFile C:\Users\Cristian\Desktop\Ciclo\Despliegue\vockey.pem
+    ProxyJump Bastion
+
+Host Base
+    HostName 172.31.18.32
+    User ubuntu
+    IdentityFile C:\Users\Cristian\Desktop\Ciclo\Despliegue\vockey.pem
+    ProxyJump Bastion
+
+Para pasar ficheros con las variables dev.auto.tfvars
+Para ejecutar el terraform con disitintos entornos con las variables
+hacemos
+terraform apply -var-file="dev.tfvars"
+
+Para la base de datos podemos hacer qeu el script se .tftpl induciendo los datos 
+sensibles que estaran en una variable de terraform y en ficheros de
+dev.tfvars

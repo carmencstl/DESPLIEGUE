@@ -1,0 +1,29 @@
+#!/bin/bash
+
+apt update
+apt upgrade -y
+apt install apache2 -y
+
+cat > /etc/apache2/sites-available/frontend.conf << EOF
+<VirtualHost *:80>
+    DocumentRoot /var/www/frontend
+    ProxyPass "/api/" "http://${backendip}/"
+    ProxyPassReverse "/api/" "http://${backendip}/"
+</VirtualHost>
+EOF
+
+mkdir -p /var/www/frontend     
+
+cat > /var/www/frontend/index.html << EOF
+    <html>
+        <body>
+        <h1>FRONTEND SERVER WITH PROXY TO BACKEND</h1>
+        </body>
+    </html>
+EOF
+
+a2dissite 000-default   
+a2ensite frontend.conf
+a2enmod proxy
+a2enmod proxy_http
+systemctl restart apache2

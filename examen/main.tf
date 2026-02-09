@@ -14,7 +14,7 @@ resource "aws_instance" "Bastion" {
   instance_type          = "t2.small"
   vpc_security_group_ids = [aws_security_group.Bastion.id]
   key_name               = "vockey"
-  tags = {
+  tags = {a
     Name = "Bastion"
   }
 }

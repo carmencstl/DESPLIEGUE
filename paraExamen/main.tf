@@ -161,6 +161,11 @@ resource "aws_eip" "ip_elastica_bastion" {
 /* ROUTE 53 */
 resource "aws_route53_zone" "mainzone" {
   name = var.zone_name
+  vpc{
+  vpc_id = data.aws_vpc.default.id
+  vpc_region = "us-east-1"
+  }
+  
 }
 
 
@@ -232,3 +237,13 @@ resource "aws_route53_record" "Database_record" {
   ttl     = "300"
   records = [aws_instance.Database.private_ip]
 }
+
+/* CNAME */
+resource "aws_route53_record" "www_record" {
+  zone_id = aws_route53_zone.mainzone.zone_id
+  name    = "www.${var.zone_name}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_route53_record.FrontEnd_record.fqdn]
+}
+

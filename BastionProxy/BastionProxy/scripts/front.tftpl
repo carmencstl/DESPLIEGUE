@@ -1,0 +1,38 @@
+#!/bin/bash
+
+hostnamectl set-hostname FRONTEND
+
+exec > /tmp/userdata.log 2>&1
+
+
+apt update
+apt upgrade -y
+
+
+apt install apache2 -y
+
+#habilitamos el proxy
+a2enmod proxy
+a2enmod proxy_http
+
+systemctl restart apache2
+
+habilitamos un nuevo sitio para el proxy
+cat> /etc/apache2/sites-available/proxy.conf <<EOF
+<VirtualHost *:80>
+DocumentRoot /var/www/frontend/
+ServerName ${front_dns}
+ServerAlias *
+ProxyPass "/api/" "http://${backend_ip}/"
+ProxyPassReverse "/api/" "http://${backend_ip}/"
+</VirtualHost>
+EOF
+
+mkdir -p /var/www/frontend
+cat>/var/www/frontend/index.html <<EOF
+<h1>Estamos en el frontend de Miriam Diaz Plaza</h1>
+EOF
+
+a2dissite 000-default
+a2ensite proxy.conf
+systemctl restart apache2

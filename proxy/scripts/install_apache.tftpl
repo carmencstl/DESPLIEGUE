@@ -1,0 +1,26 @@
+#!/bin/bash -xe
+exec > /tmp/userdata.log 2>&1   
+
+
+apt update -y                   
+apt upgrade -y                  
+apt install -y apache2      
+a2enmod proxy_http #Con solo poner este te habilita los dos módulos necesarios
+a2enmod proxy
+
+
+cat > /etc/apache2/sites-available/nuevo.conf << EOF
+<VirtualHost *:80>
+    ProxyPass "/" "${backendip}/"
+    ProxyPassReverse "/" "${backendip}/"
+</VirtualHost>
+EOF
+
+a2dissite 000-default.conf
+a2ensite nuevo.conf
+
+systemctl restart apache2   
+
+
+
+

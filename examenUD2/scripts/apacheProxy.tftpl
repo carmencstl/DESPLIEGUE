@@ -7,19 +7,22 @@ apt install apache2 -y
 cat > /etc/apache2/sites-available/frontend.conf << EOF
 <VirtualHost *:80>
     DocumentRoot /var/www/frontend
-    ProxyPass "/api/" "http://${backendip}/"
-    ProxyPassReverse "/api/" "http://${backendip}/"
+    ProxyPass "/api/" "http://${APIrecord}/"
+    ProxyPassReverse "/api/" "http://${APIrecord}/"
+    ProxyPass "/images/" "http://${imagesrecord}/"
+    ProxyPassReverse "/images/" "http://${imagesrecord}/"
 </VirtualHost>
 EOF
 
 mkdir -p /var/www/frontend     
 
 cat > /var/www/frontend/index.html << EOF
-    <HTML>
-        <BODY>
-        <H1>FRONTEND SERVER WITH PROXY TO BACKEND</H1>
-        </BODY>
-    </HTML>
+    <html>
+        <body>
+        <h1>FRONTEND CON PROXY</h1>
+        <p>Carmen Castillo Gaitan</p>
+        </body>
+    </html>
 EOF
 
 a2dissite 000-default   
